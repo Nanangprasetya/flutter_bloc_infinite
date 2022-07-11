@@ -3,8 +3,6 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../../../config/config.dart';
 
-
-
 class BaseApi {
   BaseApi() {
     Environment? env = Environment.instance;
@@ -19,9 +17,16 @@ class BaseApi {
   );
 
   Dio _dio = Dio(BaseApi.options)
-    ..interceptors.add(PrettyDioLogger(
-      responseBody: Environment.instance.values!.printResponse!,
-    ));
+    ..interceptors.add(
+      PrettyDioLogger(
+        // responseBody: Environment.instance.values!.printResponse!,
+        responseBody: false,
+        request: false,
+        requestBody: false,
+        responseHeader: false,
+        compact: false,
+      ),
+    );
 
   Future<dynamic> get(
     String uri, {
@@ -40,7 +45,6 @@ class BaseApi {
       );
       return response.data;
     } catch (e) {
-
       throw e;
     }
   }

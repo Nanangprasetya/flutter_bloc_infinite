@@ -15,7 +15,7 @@ void main() {
     env: Env.DEV,
     values: EnvValues(
       appVersion: '0.0.1',
-      baseApi: 'https://5f7cba02834b5c0016b058aa.mockapi.io/api/',
+      baseApi: 'https://6186ca2fcd8530001765abb8.mockapi.io/api2/',
       debug: false,
       delay: 30000,
       printResponse: true,

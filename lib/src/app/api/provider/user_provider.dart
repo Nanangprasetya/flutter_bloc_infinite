@@ -1,11 +1,11 @@
 import '../../app.dart';
 
-class UserRepository extends BaseApi {
+class UsersProvider extends BaseApi {
   final repo = 'users';
 
-  Future<List<UserModel>> getUsers(PaginationFilter filter) async {
+  Future<List<UserModel>> getUsers({int? page = 0, int? limit = 20}) async {
     final lst = await get('$repo/',
-        queryParameters: {'page': filter.page, 'limit': filter.limit});
+        queryParameters: {'page':page, 'limit': limit});
     return lst.map<UserModel>((value) => UserModel.fromJson(value)).toList();
   }
 
