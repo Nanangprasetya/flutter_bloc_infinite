@@ -1,4 +1,6 @@
-import '../../app.dart';
+
+import '../../app/app.dart';
+import '../model/model.dart';
 
 class UsersProvider extends BaseApi {
   final repo = 'users';

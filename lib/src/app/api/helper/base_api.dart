@@ -6,7 +6,7 @@ import '../../../config/config.dart';
 class BaseApi {
   BaseApi() {
     Environment? env = Environment.instance;
-    print("Environment info => $env");
+    print("Environment info => ${env.env}");
   }
 
   static BaseOptions options = BaseOptions(
