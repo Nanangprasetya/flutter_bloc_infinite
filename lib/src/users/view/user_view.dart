@@ -17,10 +17,7 @@ class _UsersViewState extends State<UsersView> {
 
   final _scrollController = ScrollController();
   final _keyRefresh = GlobalKey<RefreshIndicatorState>();
-  final _keyForm = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  final _nameController = TextEditingController();
-  final _usernameController = TextEditingController();
 
   @override
   void initState() {
@@ -50,10 +47,6 @@ class _UsersViewState extends State<UsersView> {
               icon: Icon(Icons.refresh),
             ),
           ),
-          IconButton(
-            onPressed: () => _createModalButton(context),
-            icon: Icon(Icons.add),
-          )
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -65,12 +58,12 @@ class _UsersViewState extends State<UsersView> {
           if (state.userStatus == UserStatus.failure) {
             DialogUtil.showErrorDialog(context, state.errorMessage);
           }
-          if (state.userStatus == UserStatus.refresh) {
+          if (state.userStatus == UserStatus.initial) {
             if (kIsWeb) _scrollController.jumpTo(_scrollController.position.minScrollExtent);
           }
         },
         builder: (context, state) {
-          if (state.userStatus == UserStatus.success || state.userStatus == UserStatus.refresh) {
+          if (state.userStatus == UserStatus.success) {
             if (state.data!.isEmpty) {
               return Center(child: Text("Data is Empty"));
             }
@@ -90,7 +83,6 @@ class _UsersViewState extends State<UsersView> {
                           title: Text(state.data![index].name),
                           subtitle: Text(state.data![index].username),
                           trailing: Text(state.data![index].id!),
-                          onTap: () {},
                         );
                 },
                 separatorBuilder: (BuildContext context, int index) => Divider(height: 0),
@@ -103,77 +95,6 @@ class _UsersViewState extends State<UsersView> {
         },
       ),
     );
-  }
-
-  Future<void> _createModalButton(BuildContext context) async {
-    _scaffoldKey.currentState!.showBottomSheet((context) => BlocBuilder<UserCubit, UserState>(
-          builder: ((context, state) => Wrap(
-                children: [
-                  Form(
-                    key: _keyForm,
-                    child: SafeArea(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Column(
-                          children: [
-                            Container(
-                              alignment: Alignment.center,
-                              padding: EdgeInsets.symmetric(
-                                vertical: 16,
-                              ),
-                              width: double.infinity,
-                              child: Text(
-                                "Create User",
-                                style: Theme.of(context).textTheme.headline6,
-                              ),
-                            ),
-                            TextFormField(
-                              controller: _nameController,
-                              validator: (i) {
-                                if (i!.isEmpty) {
-                                  return "Nama tidak boleh kosong";
-                                }
-                                return null;
-                              },
-                              decoration: InputDecoration(
-                                  labelText: "Name",
-                                  border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8.0)))),
-                            ),
-                            SizedBox(height: 16),
-                            TextFormField(
-                              controller: _usernameController,
-                              validator: (i) {
-                                if (i!.isEmpty) {
-                                  return "Username tidak boleh kosong";
-                                }
-                                return null;
-                              },
-                              decoration: InputDecoration(
-                                  labelText: "Username",
-                                  border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8.0)))),
-                            ),
-                            SizedBox(height: 36),
-                            ButtonTheme(
-                              padding: EdgeInsets.symmetric(horizontal: 16),
-                              child: OutlinedButton(
-                                onPressed: () {
-                                  if (_keyForm.currentState!.validate()) {
-                                    _keyForm.currentState!.save();
-
-                                    context.read<UserCubit>().create(_nameController.text, _usernameController.text);
-                                  }
-                                },
-                                child: Text("Save Data"),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              )),
-        ));
   }
 
   void _scrollEvent() {

@@ -5,9 +5,9 @@ import '../users.dart';
 
 part 'user_state.dart';
 
-const _limit = 20;
 
 class UserCubit extends Cubit<UserState> {
+  final _limit = 20;
   UserCubit() : super(UserState()) {
     getAllUsers();
   }
@@ -27,7 +27,7 @@ class UserCubit extends Cubit<UserState> {
 
       final listUser = await _repository.getUsers(page: state.page!, limit: _limit);
 
-      final result = state.userStatus == UserStatus.refresh ? [...listUser] : [...state.data!, ...listUser];
+      final result = state.userStatus == UserStatus.initial ? [...listUser] : [...state.data!, ...listUser];
 
       emit(
         state.copyWith(
