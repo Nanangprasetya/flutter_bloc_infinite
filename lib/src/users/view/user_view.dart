@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:very_good_app/src/config/config.dart';
 import 'package:very_good_app/src/users/cubit/user_cubit.dart';
 import 'package:very_good_app/src/utils/utils.dart';
+
 class UsersView extends StatefulWidget {
   UsersView({Key? key}) : super(key: key);
 
@@ -11,6 +13,8 @@ class UsersView extends StatefulWidget {
 }
 
 class _UsersViewState extends State<UsersView> {
+  Environment? env = Environment.instance;
+
   final _scrollController = ScrollController();
   final _keyRefresh = GlobalKey<RefreshIndicatorState>();
   final _keyForm = GlobalKey<FormState>();
@@ -37,7 +41,7 @@ class _UsersViewState extends State<UsersView> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text("BLOC Infinite Scroll"),
+        title: Text("BLOC Infinite Scroll ${env!.name}"),
         actions: [
           Visibility(
             visible: kIsWeb,
@@ -62,14 +66,11 @@ class _UsersViewState extends State<UsersView> {
             DialogUtil.showErrorDialog(context, state.errorMessage);
           }
           if (state.userStatus == UserStatus.refresh) {
-            if (kIsWeb)
-              _scrollController
-                  .jumpTo(_scrollController.position.minScrollExtent);
+            if (kIsWeb) _scrollController.jumpTo(_scrollController.position.minScrollExtent);
           }
         },
         builder: (context, state) {
-          if (state.userStatus == UserStatus.success ||
-              state.userStatus == UserStatus.refresh) {
+          if (state.userStatus == UserStatus.success || state.userStatus == UserStatus.refresh) {
             if (state.data!.isEmpty) {
               return Center(child: Text("Data is Empty"));
             }
@@ -80,32 +81,23 @@ class _UsersViewState extends State<UsersView> {
                 physics: const BouncingScrollPhysics(),
                 controller: _scrollController,
                 itemCount: state.data!.length,
-                separatorBuilder: (BuildContext context, int index) {
-                  if (index >= state.data!.length) if (state.hasMax!)
-                    return SizedBox();
-                  else
-                    return _BottomLoader();
-                  else
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage:
-                            AppUtil.imageProvider(state.data![index].avatar),
-                      ),
-                      title: Text(state.data![index].name!),
-                      subtitle: Text(state.data![index].username!),
-                      trailing: Text(state.data![index].id!),
-                      onTap: () {},
-                    );
-                },
                 itemBuilder: (BuildContext context, int index) {
-                  return Divider(height: 0);
+                  return (index >= state.data!.length - 1)
+                      ? state.hasMax!
+                          ? SizedBox()
+                          : _BottomLoader()
+                      : ListTile(
+                          title: Text(state.data![index].name),
+                          subtitle: Text(state.data![index].username),
+                          trailing: Text(state.data![index].id!),
+                          onTap: () {},
+                        );
                 },
+                separatorBuilder: (BuildContext context, int index) => Divider(height: 0),
               ),
             );
           } else if (state.userStatus == UserStatus.failure) {
-            return Center(
-              child: Text("Failed to get data Users."),
-            );
+            return Center(child: Text("Failed to get data Users."));
           } else
             return Center(child: CircularProgressIndicator());
         },
@@ -114,8 +106,7 @@ class _UsersViewState extends State<UsersView> {
   }
 
   Future<void> _createModalButton(BuildContext context) async {
-    _scaffoldKey.currentState!.showBottomSheet((context) =>
-        BlocBuilder<UserCubit, UserState>(
+    _scaffoldKey.currentState!.showBottomSheet((context) => BlocBuilder<UserCubit, UserState>(
           builder: ((context, state) => Wrap(
                 children: [
                   Form(
@@ -146,9 +137,7 @@ class _UsersViewState extends State<UsersView> {
                               },
                               decoration: InputDecoration(
                                   labelText: "Name",
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(8.0)))),
+                                  border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8.0)))),
                             ),
                             SizedBox(height: 16),
                             TextFormField(
@@ -161,25 +150,21 @@ class _UsersViewState extends State<UsersView> {
                               },
                               decoration: InputDecoration(
                                   labelText: "Username",
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(8.0)))),
+                                  border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8.0)))),
                             ),
                             SizedBox(height: 36),
                             ButtonTheme(
                               padding: EdgeInsets.symmetric(horizontal: 16),
                               child: OutlinedButton(
-                                  onPressed: () {
-                                    if (_keyForm.currentState!.validate()) {
-                                      _keyForm.currentState!.save();
+                                onPressed: () {
+                                  if (_keyForm.currentState!.validate()) {
+                                    _keyForm.currentState!.save();
 
-                                      context.read<UserCubit>().createUser(
-                                            _nameController.text,
-                                            _usernameController.text,
-                                          );
-                                    }
-                                  },
-                                  child: Text("Save Data")),
+                                    context.read<UserCubit>().create(_nameController.text, _usernameController.text);
+                                  }
+                                },
+                                child: Text("Save Data"),
+                              ),
                             ),
                           ],
                         ),
@@ -211,7 +196,7 @@ class _BottomLoader extends StatelessWidget {
       child: SizedBox(
         height: 24,
         width: 24,
-        child: CircularProgressIndicator(strokeWidth: 1.5),
+        child: CircularProgressIndicator(strokeWidth: 2.5),
       ),
     );
   }

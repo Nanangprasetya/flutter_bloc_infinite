@@ -1,22 +1,27 @@
-class UserModel {
-  String? id;
-  String? name;
-  String? username;
-  String? avatar;
+import 'package:equatable/equatable.dart';
 
-  UserModel({this.id, this.name, this.username, this.avatar});
+class UserModel extends Equatable {
+  final String? id;
+  final String name;
+  final String username;
 
-  UserModel.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    username = json['username'];
-    avatar = json['avatar'];
+  UserModel({this.id, required this.name, required this.username});
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id'],
+      name: json['name'],
+      username: json['username'],
+    );
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['name'] = this.name;
-    data['username'] = this.username;
+    data['username'] = this.name;
     return data;
   }
+
+  @override
+  List<Object?> get props => [id, name, username];
 }

@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:formz/formz.dart';
 
 import '../users.dart';
 
@@ -24,16 +23,11 @@ class UserCubit extends Cubit<UserState> {
     try {
       if (state.hasMax!) return;
 
-      if (state.userStatus == UserStatus.initial) {
-        emit(state.copyWith(userStatus: UserStatus.initial));
-      }
+      if (state.userStatus == UserStatus.initial) emit(state.copyWith(userStatus: UserStatus.initial));
 
-      final listUser =
-          await _repository.getUsers(page: state.page!, limit: _limit);
+      final listUser = await _repository.getUsers(page: state.page!, limit: _limit);
 
-      final result = state.userStatus == UserStatus.refresh
-          ? [...listUser]
-          : [...state.data!, ...listUser];
+      final result = state.userStatus == UserStatus.refresh ? [...listUser] : [...state.data!, ...listUser];
 
       emit(
         state.copyWith(
@@ -44,18 +38,15 @@ class UserCubit extends Cubit<UserState> {
         ),
       );
     } catch (e) {
-      emit(state.copyWith(
-          userStatus: UserStatus.failure, errorMessage: e.toString()));
+      emit(state.copyWith(userStatus: UserStatus.failure, errorMessage: e.toString()));
     }
   }
 
-  Future<void> createUser(String? name, String? username) async {
+  Future<void> create(String? name, String? username) async {
     try {
-      final _data =
-          UserModel(name: name!, username: username!);
+      final _data = UserModel(name: name!, username: username!);
       _repository.createUser(_data);
       refreshUsers();
-      
     } catch (e) {
       print(e);
     }

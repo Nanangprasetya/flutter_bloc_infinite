@@ -34,7 +34,7 @@ Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
     () async {
       await BlocOverrides.runZoned(
         () async => runApp(await builder()),
-        blocObserver: AppBlocObserver(),
+        // blocObserver: AppBlocObserver(),
       );
     },
     (error, stackTrace) => log(error.toString(), stackTrace: stackTrace),

@@ -1,4 +1,4 @@
-package com.example.verygoodcore.very_good_app
+package com.example.verygoodcore.very_good_app.prod
 
 import io.flutter.embedding.android.FlutterActivity
 
